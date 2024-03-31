@@ -54,11 +54,17 @@ def visualize_graph(graph):
 def visualize_graph_with_colors(graph):
     G = nx.Graph()
 
+    # Add nodes to the graph in the desired order
+    node_ids = sorted(graph.keys())
+    for node_id in node_ids:
+        G.add_node(node_id)
+
     for node_id, node in graph.items():
         for neighbor in node.neighbors:
             G.add_edge(node_id, neighbor.id)
 
-    node_colors = [node.color for node in graph.values()]
+    # Get node colors in the correct order
+    node_colors = [graph[node_id].color for node_id in node_ids]
 
     nx.draw(G, with_labels=True, node_color=node_colors, cmap=plt.cm.rainbow)
     plt.show()
