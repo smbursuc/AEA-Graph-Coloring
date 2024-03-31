@@ -1,0 +1,30 @@
+input:
+
+G = (V,E)
+k = number of colors
+|T| = size of tabu list
+rep = number of neighbours in sample
+nbmax = maximum number of iterations
+
+initialization:
+
+generate a random solution s = (v1,...,vk)
+nbiter = 0, choose an arbitrary tabu list T.
+
+take f  as the number of edges  for which  both  endpoints  are  in  the  same  V i (i.e.  have the  same  color)
+while f(s) > 0 and nbiter <nbmax
+	generate rep neighbours si of s with move s -> si not in T or f(si) <= A(f(s))
+(as soon as we get an si with f(si) < f(s) we stop the generation)
+
+let s' be the best neighbour generated
+
+update tabu list T
+(introduce move s->s' and remove oldest tabu move)
+
+s = s'
+nbiter = nbiter + 1
+endwhile
+
+output:
+if f(s) = 0, we get a coloring of G with k colors: V1,...,Vk are the color sets. Otherwise no coloring has been found
+with k colors.
