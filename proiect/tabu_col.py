@@ -63,11 +63,12 @@ def tabucol(graph, k, tabu_size, rep, nbmax):
             else:
                 tabu_list.append(best_neighbor)
             if len(tabu_list) > tabu_size:
-                tabu_list.pop(0)
+                tabu_list.clear()
 
         nbiter += 1
 
     print(f"Minimum conflicts found: {min_asp}")
+    print(f"Number of iterations: {nbiter}")
     return current_solution if f(current_solution) == 0 else None
     # return current_solution
 
@@ -77,7 +78,7 @@ def main():
     graph = read_graph_instance.read_col_graph(filename)
 
     k = 5  # Number of colors
-    tabu_size = 100 # Size of tabu list
+    tabu_size = 7 # Size of tabu list
     rep = 5  # Number of neighbors in sample
     nbmax = 100000  # Maximum number of iterations
 
