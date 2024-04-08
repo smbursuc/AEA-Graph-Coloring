@@ -7,6 +7,8 @@ class Node:
         self.color = 'unset'
         self.neighbors = set()
 
+    def degree(self):
+        return len(self.neighbors)
     def add_neighbor(self, neighbor):
         self.neighbors.add(neighbor)
 
