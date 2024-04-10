@@ -74,7 +74,7 @@ def visualize_graph_with_colors(graph):
 
 
 def main():
-    filename = 'instances/test_instance.col'  # Change this to your .col file name
+    filename = 'small_instances/test_instance.col'  # Change this to your .col file name
     graph = read_col_graph(filename)
 
     if not graph:

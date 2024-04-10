@@ -1,6 +1,9 @@
 import random
 import read_graph_instance
 import copy
+import sys
+sys.setrecursionlimit(50000)  # Set the recursion limit to a higher value, e.g., 5000
+
 
 def calculate_conflicts(graph):
     conflicts = 0
@@ -67,13 +70,13 @@ def tabucol(graph, k, tabu_size, rep, nbmax):
 
         nbiter += 1
 
-    print(f"Minimum conflicts found: {min_asp}")
-    print(f"Number of iterations: {nbiter}")
-    return current_solution if f(current_solution) == 0 else None
-    # return current_solution
+    # print(f"Minimum conflicts found: {min_asp}")
+    # print(f"Number of iterations: {nbiter}")
+    # return current_solution if f(current_solution) == 0 else None
+    return current_solution
 
 def main():
-    # filename = 'instances/test_instance.col' # Change this to your .col file name
+    #filename = 'instances/test_instance.col' # Change this to your .col file name
     filename = 'instances/le450_15c.col' # Change this to your .col file name
     graph = read_graph_instance.read_col_graph(filename)
 
@@ -87,11 +90,12 @@ def main():
 
     if solution:
         # Assign colors to graph nodes
-        for node_id, node in solution.items():
-            graph[node_id].color = node.color
+        # for node_id, node in solution.items():
+        #     graph[node_id].color = node.color
 
         # Visualization of colored graph
-        read_graph_instance.visualize_graph_with_colors(solution)
+        # read_graph_instance.visualize_graph_with_colors(solution)
+        pass
     else:
         print("No coloring found within the maximum number of iterations.")
 
