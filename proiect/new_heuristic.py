@@ -29,20 +29,7 @@ def update_pheromone(pheromone_matrix, solutions, evaporation_rate):
                 pheromone_matrix[neighbor.id - 1][node_id - 1] += 1 / (conflicts + 1)
     # Evaporation
     pheromone_matrix *= (1 - evaporation_rate)
-# def update_pheromone(pheromone_matrix, solutions, evaporation_rate):
-#     for solution in solutions:
-#         conflicts = calculate_conflicts(solution)
-#         penalty_factor = 1 + conflicts  # Higher conflicts, higher penalty
 
-#         # Update pheromone based on conflicts (lower conflicts => stronger pheromone)
-#         for node_id, node in solution.items():
-#             for neighbor in node.neighbors:
-#                 # Update pheromone with penalty for conflicts
-#                 delta_pheromone = 1 / (penalty_factor * (conflicts + 1))
-#                 pheromone_matrix[node_id - 1][neighbor.id - 1] += delta_pheromone
-#                 pheromone_matrix[neighbor.id - 1][node_id - 1] += delta_pheromone
-#     # Evaporation
-#     pheromone_matrix *= (1 - evaporation_rate)
 
 
 def construct_ant_solution(graph, pheromone_matrix, k):
@@ -50,86 +37,69 @@ def construct_ant_solution(graph, pheromone_matrix, k):
     for node_id, node in solution.items():
         # Adjust node_id to zero-based indexing
         node_id -= 1
-        # Calculate probabilities for choosing colors based on pheromone levels and heuristics
+        
+        # Calculate probabilities for choosing colors based on pheromone levels, node degree, and conflicts
         color_probabilities = []
         for color in range(k):
             pheromone_sum = sum(pheromone_matrix[node_id])
             pheromone_probability = pheromone_matrix[node_id][color] / pheromone_sum
-            # Add heuristic information (e.g., number of conflicts)
-            # You can implement additional heuristic information here
-            color_probabilities.append((color, pheromone_probability))
+            # Calculate the number of conflicts with this color
+            conflicts_with_color = sum(1 for neighbor in node.neighbors if neighbor.color == color)
+            # Heuristic: Choose the color that minimizes conflicts with neighbors and considers node degree
+            degree = node.degree()  # Assuming degree is a method and needs to be called
+            degree_factor = 1 / (degree + 1)  # Adding 1 to avoid division by zero
+            color_probabilities.append((color, pheromone_probability * degree_factor / (conflicts_with_color + 1)))  # Adding 1 to avoid division by zero
+        
         # Choose color based on probabilities
         chosen_color = random.choices(*zip(*color_probabilities))[0]
         node.color = chosen_color
+        
     return solution
 
-# def construct_ant_solution(graph, pheromone_matrix, k):
-#     solution = {node_id: node for node_id, node in graph.items()}
-#     for node_id, node in solution.items():
-#         node_id -= 1
-#         color_probabilities = []
-#         for color in range(k):
-#             pheromone_sum = sum(pheromone_matrix[node_id])
-#             pheromone_probability = pheromone_matrix[node_id][color] / pheromone_sum
 
-#             # Heuristic based on node degree (higher degree, more options)
-#             node_degree_weight = 1 / (node.degree() + 1)  # Normalize weight
+def local_search(graph, solution):
+    improved = True
+    while improved:
+        improved = False
+        conflicts = calculate_conflicts(solution)
+        for node_id, node in solution.items():
+            current_color = node.color
+            for color in range(5):
+                if color != current_color:
+                    original_color = node.color
+                    node.color = color
+                    new_conflicts = calculate_conflicts(solution)
+                    if new_conflicts < conflicts:
+                        improved = True
+                        conflicts = new_conflicts
+                    else:
+                        node.color = original_color
+        if improved:
+            print("Local search: Conflicts reduced to", conflicts)
+    return solution
 
-#             # Heuristic based on available colors for neighbors (fewer options, prefer this color)
-#             available_neighbor_colors = set(neighbor.color for neighbor in node.neighbors if neighbor.color is not None)
-#             neighbor_color_weight = len(available_neighbor_colors)
-
-#             # Combine pheromone with heuristics (adjust weights as needed)
-#             combined_probability = pheromone_probability * node_degree_weight * neighbor_color_weight
-#             color_probabilities.append((color, combined_probability))
-
-#         # Choose color based on adjusted probabilities
-#         chosen_color = random.choices(*zip(*color_probabilities))[0]
-#         node.color = chosen_color
-#     return solution
-
-
-# def construct_ant_solution(graph, pheromone_matrix, k):
-#     solution = {node_id: node for node_id, node in graph.items()}
-#     for node_id, node in solution.items():
-#         # Adjust node_id to zero-based indexing
-#         node_id -= 1
-#         color_probabilities = []
-#         for color in range(k):
-#             pheromone_sum = sum(pheromone_matrix[node_id])
-#             pheromone_probability = pheromone_matrix[node_id][color] / pheromone_sum
-
-#             # Conflict calculation for current color
-#             conflict_count = 0
-#             for neighbor in node.neighbors:
-#                 if neighbor.color == color:
-#                     conflict_count += 1
-
-#             # Adjust probability based on conflict count (higher conflict, lower probability)
-#             adjusted_probability = pheromone_probability * (1 / (conflict_count + 1))
-#             color_probabilities.append((color, adjusted_probability))
-#         # Choose color based on adjusted probabilities
-#         chosen_color = random.choices(*zip(*color_probabilities))[0]
-#         node.color = chosen_color
-#     return solution
-
-
-
-def ant_col(graph, k, num_ants, evaporation_rate, iterations):
+def ant_col_with_local_search(graph, k, num_ants, evaporation_rate, iterations):
     pheromone_matrix = initialize_pheromone_matrix(graph)
     best_solution = None
     best_conflicts = float('inf')
-    for _ in range(iterations):
+    ok=0
+    while(ok == 0):
         ant_solutions = []
         for _ in range(num_ants):
             ant_solution = construct_ant_solution(graph, pheromone_matrix, k)
+            ant_solution = local_search(graph, ant_solution)  # Apply local search
             ant_solutions.append(ant_solution)
             conflicts = calculate_conflicts(ant_solution)
             if conflicts < best_conflicts:
                 best_conflicts = conflicts
                 best_solution = copy.deepcopy(ant_solution)
-        update_pheromone(pheromone_matrix, ant_solutions, evaporation_rate)
+                update_pheromone(pheromone_matrix, ant_solutions, evaporation_rate)
+                print(best_conflicts)
+                if best_conflicts == 0:
+                    ok=1
+        
     return best_solution
+
 
 def main():
     filename = 'instances/queen5_5.col' # Change this to your .col file name
@@ -140,7 +110,7 @@ def main():
     evaporation_rate = 0.1 # Evaporation rate
     iterations = 100  # Number of iterations
 
-    solution = ant_col(graph, k, num_ants, evaporation_rate, iterations)
+    solution = ant_col_with_local_search(graph, k, num_ants, evaporation_rate, iterations)
 
     if solution:
         # Assign colors to graph nodes
