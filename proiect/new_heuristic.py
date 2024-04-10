@@ -113,6 +113,9 @@ def main():
     solution = ant_col_with_local_search(graph, k, num_ants, evaporation_rate, iterations)
 
     if solution:
+        brrr = calculate_conflicts(solution)
+
+        print("CONFLCITS : ", brrr)
         # Assign colors to graph nodes
         for node_id, node in solution.items():
             graph[node_id].color = node.color
