@@ -47,7 +47,7 @@ def dsatur(graph):
 
 
 def main():
-    filename = 'instances/le450_15c.col'  # Change this to your .col file name
+    filename = 'instances/queen5_5.col'  # Change this to your .col file name
     graph = read_graph_instance.read_col_graph(filename)
 
     if not graph:

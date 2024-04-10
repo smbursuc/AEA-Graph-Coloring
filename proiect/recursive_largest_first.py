@@ -39,7 +39,7 @@ def recursive_largest_first(graph):
     return graph_copy, color_number
 
 def main():
-    filename = 'instances/le450_15c.col'  # Change this to your .col file name
+    filename = 'instances/queen5_5.col'  # Change this to your .col file name
     graph = read_graph_instance.read_col_graph(filename)
 
     if not graph:

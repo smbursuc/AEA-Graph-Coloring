@@ -73,13 +73,13 @@ def tabucol(graph, k, tabu_size, rep, nbmax):
     # return current_solution
 
 def main():
-    # filename = 'instances/test_instance.col' # Change this to your .col file name
-    filename = 'instances/le450_15c.col' # Change this to your .col file name
+    filename = 'instances/test_instance.col' # Change this to your .col file name
+    filename = 'instances/queen5_5.col' # Change this to your .col file name
     graph = read_graph_instance.read_col_graph(filename)
 
-    k = 25  # Number of colors
+    k = 5  # Number of colors
     tabu_size = 7 # Size of tabu list
-    rep = 3  # Number of neighbors in sample
+    rep = 5  # Number of neighbors in sample
     nbmax = 100000  # Maximum number of iterations
 
 
