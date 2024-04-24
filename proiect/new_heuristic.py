@@ -57,14 +57,14 @@ def construct_ant_solution(graph, pheromone_matrix, k):
     return solution
 
 
-def local_search(graph, solution):
+def local_search(graph, solution,k):
     improved = True
     while improved:
         improved = False
         conflicts = calculate_conflicts(solution)
         for node_id, node in solution.items():
             current_color = node.color
-            for color in range(5):
+            for color in range(k):
                 if color != current_color:
                     original_color = node.color
                     node.color = color
@@ -74,8 +74,8 @@ def local_search(graph, solution):
                         conflicts = new_conflicts
                     else:
                         node.color = original_color
-        if improved:
-            print("Local search: Conflicts reduced to", conflicts)
+        # if improved:
+        #     print("Local search: Conflicts reduced to", conflicts)
     return solution
 
 def ant_col_with_local_search(graph, k, num_ants, evaporation_rate, iterations):
@@ -83,20 +83,22 @@ def ant_col_with_local_search(graph, k, num_ants, evaporation_rate, iterations):
     best_solution = None
     best_conflicts = float('inf')
     ok=0
-    while(ok == 0):
+    i=0
+    while(ok == 0 and i<iterations):
         ant_solutions = []
         for _ in range(num_ants):
             ant_solution = construct_ant_solution(graph, pheromone_matrix, k)
-            ant_solution = local_search(graph, ant_solution)  # Apply local search
+            ant_solution = local_search(graph, ant_solution,k)  # Apply local search
             ant_solutions.append(ant_solution)
             conflicts = calculate_conflicts(ant_solution)
             if conflicts < best_conflicts:
                 best_conflicts = conflicts
                 best_solution = copy.deepcopy(ant_solution)
                 update_pheromone(pheromone_matrix, ant_solutions, evaporation_rate)
-                print(best_conflicts)
+                # print(best_conflicts)
                 if best_conflicts == 0:
                     ok=1
+        i=i+1
         
     return best_solution
 

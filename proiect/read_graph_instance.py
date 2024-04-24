@@ -12,6 +12,18 @@ class Node:
     def add_neighbor(self, neighbor):
         self.neighbors.add(neighbor)
 
+def get_edges_vertexes(filename):
+    nodes = {}
+    edges = []
+
+    with open(filename, 'r') as file:
+        for line in file:
+            if line.startswith('p'):
+                _, _, num_nodes, num_edges = line.split()
+                break
+            
+
+    return num_nodes,num_edges
 
 def read_col_graph(filename):
     nodes = {}
@@ -20,7 +32,7 @@ def read_col_graph(filename):
     with open(filename, 'r') as file:
         for line in file:
             if line.startswith('p'):
-                _, _, num_nodes, _ = line.split()
+                _, _, num_nodes, num_edges = line.split()
                 num_nodes = int(num_nodes)
                 for i in range(1, num_nodes + 1):
                     nodes[i] = Node(i)
