@@ -46,7 +46,7 @@ def generate_neighbors(solution, tabu_list, rep, k):
     return neighbors
 
 
-def tabucol(graph, k, tabu_size, rep, nbmax):
+def tabucol(graph, k, tabu_size, rep, nbmax, debug=False):
     current_solution = {node_id: node for node_id, node in graph.items()}
     nbiter = 0
     tabu_list = []
@@ -63,6 +63,9 @@ def tabucol(graph, k, tabu_size, rep, nbmax):
                 else:
                     min_asp = min(min_asp, f(best_neighbor))
                 current_solution = copy.deepcopy(best_neighbor)
+
+                if debug:
+                    print(f"New minimum aspiration: {min_asp}")
             else:
                 tabu_list.append(best_neighbor)
             if len(tabu_list) > tabu_size:
@@ -70,32 +73,32 @@ def tabucol(graph, k, tabu_size, rep, nbmax):
 
         nbiter += 1
 
-    # print(f"Minimum conflicts found: {min_asp}")
-    # print(f"Number of iterations: {nbiter}")
-    # return current_solution if f(current_solution) == 0 else None
-    return current_solution
+    if debug:
+        print(f"Minimum conflicts found: {min_asp}")
+        print(f"Number of iterations: {nbiter}")
+
+    return current_solution if f(current_solution) == 0 else None
+    # return current_solution
 
 def main():
     #filename = 'instances/test_instance.col' # Change this to your .col file name
     filename = 'instances/le450_15c.col' # Change this to your .col file name
+    #filename = 'instances_k/myciel6.col' # Change this to your .col file name
     graph = read_graph_instance.read_col_graph(filename)
 
-    k = 5  # Number of colors
-    tabu_size = 7 # Size of tabu list
+    k = 7  # Number of colors
+    tabu_size = 100 # Size of tabu list
     rep = 5  # Number of neighbors in sample
     nbmax = 100000  # Maximum number of iterations
 
 
-    solution = tabucol(graph, k, tabu_size, rep, nbmax)
+    solution = tabucol(graph, k, tabu_size, rep, nbmax, True)
 
     if solution:
-        # Assign colors to graph nodes
-        # for node_id, node in solution.items():
-        #     graph[node_id].color = node.color
+        for node_id, node in solution.items():
+            graph[node_id].color = node.color
 
-        # Visualization of colored graph
-        # read_graph_instance.visualize_graph_with_colors(solution)
-        pass
+        read_graph_instance.visualize_graph_with_colors(solution)
     else:
         print("No coloring found within the maximum number of iterations.")
 

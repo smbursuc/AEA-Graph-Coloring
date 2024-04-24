@@ -45,6 +45,7 @@ def recursive_largest_first(graph):
 def main():
     filename = 'instances/queen5_5.col'  # Change this to your .col file name
     #filename = 'instances/test_instance.col'  # Change this to your .col file name
+    filename = 'instances/le450_15c.col' # Change this to your .col file name
     graph = read_graph_instance.read_col_graph(filename)
 
     if not graph:
@@ -55,7 +56,7 @@ def main():
 
     print(f"Number of colors used: {color_number}")
 
-    read_graph_instance.visualize_graph_with_colors(graph)
+    #read_graph_instance.visualize_graph_with_colors(graph)
 
     for node in graph.values():
         print(f"Node {node.id} has color {node.color}")
