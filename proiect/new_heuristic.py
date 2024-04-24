@@ -59,7 +59,8 @@ def construct_ant_solution(graph, pheromone_matrix, k):
 
 def local_search(graph, solution,k):
     improved = True
-    while improved:
+    max_iterations = 5
+    while improved and max_iterations > 0:
         improved = False
         conflicts = calculate_conflicts(solution)
         for node_id, node in solution.items():
@@ -76,6 +77,7 @@ def local_search(graph, solution,k):
                         node.color = original_color
         # if improved:
         #     print("Local search: Conflicts reduced to", conflicts)
+        max_iterations -= 1
     return solution
 
 def ant_col_with_local_search(graph, k, num_ants, evaporation_rate, iterations):

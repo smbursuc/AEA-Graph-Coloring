@@ -69,6 +69,7 @@ def tabucol(graph, k, tabu_size, rep, nbmax, debug=False):
             else:
                 tabu_list.append(best_neighbor)
             if len(tabu_list) > tabu_size:
+                current_solution = copy.deepcopy(tabu_list.pop(0))
                 tabu_list.clear()
 
         nbiter += 1

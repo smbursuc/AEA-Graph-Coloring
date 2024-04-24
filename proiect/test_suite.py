@@ -10,6 +10,7 @@ import math
 from new_heuristic import ant_col_with_local_search
 import sys
 from read_graph_instance import get_edges_vertexes
+import argparse
 sys.setrecursionlimit(1000)  # Set the recursion limit to a higher value, e.g., 5000
 
 def get_instance_name(instance_file):
@@ -52,17 +53,26 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
         self.testNr = len(os.listdir(self.instances_folder))
         print(f"Total number of tests is {self.testNr}")
 
+    def run_single_algorithm(self):
+        self.test_coloring_algorithm("ant_col_with_local_search")
 
-    def test_dsatur(self):
-        with open('test_results.csv', 'w', newline='') as csvfile:
-            fieldnames = ['Instance File', 'Number of Nodes', 'Number of Edges','Expected K','K','Execution Time','Solution found']
+    def run_tests(self):
+        coloring_algs = ["dsatur", "recursive_largest_first", "tabucol", "ant_col_with_local_search"]
+        for coloring_alg in coloring_algs:
+            self.test_coloring_algorithm(coloring_alg)
+
+    def test_coloring_algorithm(self, alg_name):
+        with open(f"csv_output/{alg_name}_results.csv", 'w', newline='') as csvfile:
+            fieldnames = ['Instance File', 'Number of Nodes', 'Number of Edges','Expected K','K','Execution Time','Solution found','Notes']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             writer.writeheader()
             for instance_file in os.listdir(self.instances_folder):
                 with self.subTest(instance_file=instance_file):
                     
+                    print(f"Starting testing for {alg_name}...\n")
                     
+                    # how do we read binary files?
                     if instance_file[-2:] == ".b" or instance_file[-4:] == ".txt":
                         self.skipped.append(instance_file)
                         continue
@@ -86,24 +96,54 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                         
                         start_time = time.time()
 
-                        # color_number = dsatur(graph)
-                        # color_number = recursive_largest_first(graph)
-                        solution = tabucol(graph, k, tabu_size=10, rep=10, nbmax=10000)
-                        # solution = ant_col_with_local_search(graph, k, num_ants=10, evaporation_rate=0.1, iterations=1000)
+                        color_number = 0
+                        solution = None
+                        meta_heurstic_check = False
+
+                        if alg_name == "dsatur":
+                            color_number = dsatur(graph)
+                        
+                        if alg_name == "recursive_largest_first":
+                            color_number = recursive_largest_first(graph)
+                        
+                        if alg_name == "tabucol":
+                            solution = tabucol(graph, k, tabu_size=10, rep=10, nbmax=10000)
+                            meta_heurstic_check = True
+                        
+                        if alg_name == "ant_col_with_local_search":
+                            solution = ant_col_with_local_search(graph, k, num_ants=10, evaporation_rate=0.1, iterations=100)
+                            meta_heurstic_check = True
+
                         end_time = time.time()
-                        execution_time = end_time - start_time
 
                         execution_time_formatted = "{:.3f}".format(end_time - start_time)
-                        print(execution_time_formatted)
-                        # isSolution = (k == color_number)
+                        print(f"Ended run with elapsed time: {execution_time_formatted}")
+
+                        resulted_k = None
+                        notes = None
+                        if meta_heurstic_check:
+                            # if antcol or tabucol was run but no solution was found mark it as failed
+                            if solution is None:
+                                isSolution = "False"
+                                resulted_k = "Fail"
+                                execution_time_formatted = "Fail"
+                            else:
+                                isSolution = "True"
+                                resulted_k = k
+                        else:
+                            # these are for heuristic algorithms
+                            isSolution = "True"
+                            resulted_k = color_number
+                        
                         writer.writerow({
                             fieldnames[0]:get_instance_name(instance_file),
                             fieldnames[1]:num_nodes,
                             fieldnames[2]:num_edges,
                             fieldnames[3]:k,
-                            # fieldnames[4]:color_number,
+                            fieldnames[4]:resulted_k,
                             fieldnames[5]:execution_time_formatted,
-                            # fieldnames[6]:isSolution
+                            fieldnames[6]:isSolution,
+                            fieldnames[7]:notes
                         })
                     except RecursionError:
                         writer.writerow({
@@ -111,18 +151,20 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                             fieldnames[1]:num_nodes,
                             fieldnames[2]:num_edges,
                             fieldnames[3]:k,
-                            # fieldnames[4]:'FAIL',
-                            fieldnames[5]:'FAIL',
-                            # fieldnames[6]:'FAIL'
+                            fieldnames[4]:'Fail',
+                            fieldnames[5]:'Fail',
+                            fieldnames[6]:'False',
+                            fieldnames[7]:'Recursion error'
                         })
                         print(f"Recursion error in {name}")
                         self.withErrors.append(instance_file)
                         continue
                     
-                    # if (color_number != k):
-                    #     self.assertEqual(color_number, k)
-                    # else:
-                    #     self.passed.append(instance_file)
+                    # assert the result for console output
+                    if (color_number != k):
+                        self.assertEqual(color_number, k)
+                    else:
+                        self.passed.append(instance_file)
 
                 
 
@@ -150,104 +192,8 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # unittest.main()
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestGraphColoringAlgorithms)
-    unittest.TextTestRunner(verbosity=2).run(suite)
-    # def test_tabucol(self):
-    #     for instance_file in os.listdir(self.instances_folder):
-    #         with self.subTest(instance_file=instance_file):
-    #             print(f"Currently running {instance_file}...")
+    unittest.main()
+    # suite = unittest.TestLoader().loadTestsFromTestCase(TestGraphColoringAlgorithms)
+    # unittest.TextTestRunner(verbosity=2).run(suite)
+    
 
-    #             if instance_file[-2:] == ".b" or instance_file[-4:] == ".txt":
-    #                 print(f"Skipping {instance_file}...\n")
-    #                 self.skipped.append(instance_file)
-    #                 continue
-
-    #             instance_path = os.path.join(self.instances_folder, instance_file)
-    #             graph = read_col_graph(instance_path)
-
-    #             k = self.solutions[get_instance_name(instance_file)]
-
-    #             if k == -1:
-    #                 continue
-
-    #             try:
-    #                 solution = tabucol(graph, k, tabu_size=10, rep=10, nbmax=10000)
-    #             except RecursionError:
-    #                 print(f"Recursion error in {get_instance_name(instance_file)}\n")
-    #                 self.withErrors.append(instance_file)
-    #                 continue
-                
-    #             if solution is None:
-    #                 print(f"Could not find a solution for {instance_file} in the maximum amount of iterations")
-    #                 self.notPassed.append(instance_file)
-    #                 self.assertEqual(solution, k)
-    #             else:
-    #                 self.passed.append(instance_file)
-                
-    #             print("\n")
-
-    # def test_recursive_largest_first(self):
-    #     for instance_file in os.listdir(self.instances_folder):
-    #         with self.subTest(instance_file=instance_file):
-    #             print(f"Currently running {instance_file}...")
-    #             if instance_file[-2:] == ".b" or instance_file[-4:] == ".txt":
-    #                 print(f"Skipping {instance_file}...")
-    #                 self.skipped.append(instance_file)
-    #                 continue
-
-    #             name = get_instance_name(instance_file)
-
-    #             instance_path = os.path.join(self.instances_folder, instance_file)
-    #             graph = read_col_graph(instance_path)
-
-    #             k = self.solutions[get_instance_name(instance_file)]
-
-    #             if k == -1:
-    #                 continue
-    #             try:
-    #                 color_number = recursive_largest_first(graph)
-    #             except RecursionError:
-    #                 print(f"Recursion error in {name}")
-    #                 self.withErrors.append(instance_file)
-    #                 continue
-                
-    #             if (color_number != k):
-    #                 self.assertEqual(color_number, k)
-    #             else:
-    #                 self.passed.append(instance_file)
-
-
-    # def test_ant_col(self):
-    #     for instance_file in os.listdir(self.instances_folder):
-    #         with self.subTest(instance_file=instance_file):
-    #             print(f"Currently running {instance_file}...")
-                
-    #             if instance_file[-2:] == ".b" or instance_file[-4:] == ".txt":
-    #                 print(f"Skipping {instance_file}...\n")
-    #                 self.skipped.append(instance_file)
-    #                 continue
-
-    #             instance_path = os.path.join(self.instances_folder, instance_file)
-    #             graph = read_col_graph(instance_path)
-
-    #             k = self.solutions[get_instance_name(instance_file)]
-
-    #             if k == -1:
-    #                 continue
-
-    #             try:
-    #                 solution = ant_col_with_local_search(graph, k, num_ants=10, evaporation_rate=0.1, iterations=10000)
-    #             except RecursionError:
-    #                 print(f"Recursion error in {get_instance_name(instance_file)}\n")
-    #                 self.withErrors.append(instance_file)
-    #                 continue
-                
-    #             if solution is None:
-    #                 print(f"Could not find a solution for {instance_file} in the maximum amount of iterations")
-    #                 self.notPassed.append(instance_file)
-    #                 self.assertEqual(solution, k)
-    #             else:
-    #                 self.passed.append(instance_file)
-                
-    #             print("\n")                    
