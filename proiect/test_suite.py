@@ -11,6 +11,7 @@ from new_heuristic import ant_col_with_local_search
 import sys
 from read_graph_instance import get_edges_vertexes
 import argparse
+from graph_helper import read_graph
 sys.setrecursionlimit(1000)  # Set the recursion limit to a higher value, e.g., 5000
 
 def get_instance_name(instance_file):
@@ -54,7 +55,7 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
         print(f"Total number of tests is {self.testNr}")
 
     def run_single_algorithm(self):
-        self.test_coloring_algorithm("ant_col_with_local_search")
+        self.test_coloring_algorithm("tabucol")
 
     def run_tests(self):
         coloring_algs = ["dsatur", "recursive_largest_first", "tabucol", "ant_col_with_local_search"]
@@ -85,7 +86,7 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
 
                     num_nodes, num_edges = get_edges_vertexes(instance_path)
                     name = get_instance_name(instance_file)
-                    graph = read_col_graph(instance_path)
+                    nodes, edges, colors, adjacency_matrix, color_matrix = read_graph(instance_path)
 
 
                     k = self.solutions[get_instance_name(instance_file)]
@@ -101,17 +102,17 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                         meta_heurstic_check = False
 
                         if alg_name == "dsatur":
-                            color_number = dsatur(graph)
+                            color_number = dsatur(adjacency_matrix, color_matrix)
                         
                         if alg_name == "recursive_largest_first":
-                            color_number = recursive_largest_first(graph)
+                            color_number = recursive_largest_first(adjacency_matrix, color_matrix)
                         
                         if alg_name == "tabucol":
-                            solution = tabucol(graph, k, tabu_size=10, rep=10, nbmax=10000)
+                            solution = tabucol(adjacency_matrix, color_matrix, k, tabu_size=10, rep=10, nbmax=10000)
                             meta_heurstic_check = True
                         
                         if alg_name == "ant_col_with_local_search":
-                            solution = ant_col_with_local_search(graph, k, num_ants=10, evaporation_rate=0.1, iterations=100)
+                            solution = ant_col_with_local_search(adjacency_matrix, color_matrix, k, num_ants=10, evaporation_rate=0.1, iterations=100)
                             meta_heurstic_check = True
 
                         end_time = time.time()
@@ -192,8 +193,12 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    # unittest.main()
     # suite = unittest.TestLoader().loadTestsFromTestCase(TestGraphColoringAlgorithms)
     # unittest.TextTestRunner(verbosity=2).run(suite)
+    suite = unittest.TestSuite()
+    suite.addTest(TestGraphColoringAlgorithms("run_single_algorithm"))
+    runner = unittest.TextTestRunner()
+    runner.run(suite)
     
 
