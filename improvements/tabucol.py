@@ -26,8 +26,18 @@ def generate_neighbors(adjacency_matrix, color_matrix, tabu_list, rep, k):
     threshold = 1
 
     for _ in range(rep):  # Number of neighbors to generate
-        # Choose a random node x among all those which are adjacent to an edge
-        candidate_nodes = [node_id for node_id, node_colors in enumerate(adjacency_matrix) if any(node_colors)]
+        # the candidate nodes will be nodes which are adjcent and have the same color
+        candidate_nodes = set()  # use a set to avoid duplicates
+
+        for i in range(len(adjacency_matrix)):
+            for j in range(i+1, len(adjacency_matrix)):  # assume undirected graph, ignoring self-loops
+                if adjacency_matrix[i][j] > 0: # adjacent
+                    if color_matrix[i] == color_matrix[j]:  # same color
+                        candidate_nodes.add(i)
+                        candidate_nodes.add(j)
+
+        candidate_nodes = list(candidate_nodes)  # convert to list for array indexing
+
         if not candidate_nodes:
             continue  # Skip if no node is adjacent to an edge
         node_to_move = random.choice(candidate_nodes)
@@ -43,7 +53,7 @@ def generate_neighbors(adjacency_matrix, color_matrix, tabu_list, rep, k):
         neighbor_conflicts = f(adjacency_matrix, neighbor_color_matrix)
 
         # Check if the move is tabu
-        is_tabu = any((node_to_move) == tabu_move[0] for tabu_move in tabu_list)
+        is_tabu = any([tabu_move for tabu_move in tabu_list if tabu_move[0] == node_to_move and tabu_move[1] == new_color])
 
         if aspiration is None:
             aspiration = neighbor_conflicts - threshold
@@ -62,6 +72,7 @@ def tabucol(adjacency_matrix, color_matrix, k, tabu_size, rep, nbmax, debug=Fals
     current_color_matrix = copy.deepcopy(color_matrix)
     nbiter = 0
     tabu_list = []
+    tabu_index = 0  # To keep track of the position in the circular buffer
 
     while f(adjacency_matrix, current_color_matrix) > 0 and nbiter < nbmax:
         neighbors = generate_neighbors(copy.deepcopy(adjacency_matrix), copy.deepcopy(current_color_matrix), copy.deepcopy(tabu_list), rep, k)
@@ -80,7 +91,11 @@ def tabucol(adjacency_matrix, color_matrix, k, tabu_size, rep, nbmax, debug=Fals
 
             for i in range(len(current_color_matrix)):
                 if current_color_matrix[i] != best_neighbor[i]:
-                    tabu_list.append((i, current_color_matrix[i], 50))  # Mark the move as tabu for a few iterations
+                    if len(tabu_list) < tabu_size:
+                        tabu_list.append((i, current_color_matrix[i], nbmax // 10))
+                    else:
+                        tabu_list[tabu_index] = (i, current_color_matrix[i], nbmax // 10)
+                        tabu_index = (tabu_index + 1) % tabu_size
 
             # if len(tabu_list) > tabu_size:
             #     tabu_list.pop(0)  # Remove oldest move from tabu list
@@ -116,8 +131,8 @@ def main():
         return
 
     k = 49  # Number of colors
-    tabu_size = 50 # Size of tabu list
-    rep = 5  # Number of neighbors in sample
+    tabu_size = 7 # Size of tabu list
+    rep = 150  # Number of neighbors in sample
     nbmax = 100000  # Maximum number of iterations
 
     solution = tabucol(adjacency_matrix, color_matrix, k, tabu_size, rep, nbmax, True)

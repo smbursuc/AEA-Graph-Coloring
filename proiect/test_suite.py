@@ -2,7 +2,7 @@ import unittest
 import os
 import time
 import csv
-from tabu_col import tabucol
+from tabucol import tabucol
 from recursive_largest_first import recursive_largest_first
 from dsatur import dsatur
 from read_graph_instance import read_col_graph
@@ -108,7 +108,10 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                             color_number = recursive_largest_first(adjacency_matrix, color_matrix)
                         
                         if alg_name == "tabucol":
-                            solution = tabucol(adjacency_matrix, color_matrix, k, tabu_size=10, rep=10, nbmax=10000)
+                            tabu_size = 7
+                            rep = len(adjacency_matrix) // 2
+                            nbmax = 10000
+                            solution = tabucol(adjacency_matrix, color_matrix, k, tabu_size, rep, nbmax)
                             meta_heurstic_check = True
                         
                         if alg_name == "ant_col_with_local_search":
