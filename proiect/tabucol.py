@@ -3,6 +3,7 @@ from random import randrange
 import graph_helper
 import copy
 from collections import deque
+import time
 
 def f(adjacency_matrix, color_matrix):
     conflicts = 0
@@ -76,6 +77,10 @@ def tabucol(adjacency_matrix, k, tabu_size, rep, nbmax, debug=False):
 
     aspiration_level = dict()
 
+    start_time = time.time()
+    timeout_duration = 300
+    is_timeout = False 
+
     while nbiter < nbmax:
 
         move_candidates = set()  # use a set to avoid duplicates
@@ -140,11 +145,22 @@ def tabucol(adjacency_matrix, k, tabu_size, rep, nbmax, debug=False):
         if debug and nbiter % 500 == 0:
             print(f"Iteration {nbiter}")
 
+        if time.time() - start_time > timeout_duration:
+            is_timeout = True
+            print("Timeout reached.")
+            break
+
         # if debug:
         #     print(f"Minimum conflicts found: {f(adjacency_matrix, current_color_matrix)}")
         #     print(f"Number of iterations: {nbiter}")
 
-    return current_color_matrix if f(adjacency_matrix, current_color_matrix) == 0 else None
+    if f(adjacency_matrix, current_color_matrix) == 0:
+        return current_color_matrix
+    else:
+        if is_timeout:
+            return "timeout"
+        return None
+
 
 def main():
     filename = 'improvements/inputs/zeroin.i.1.col'  # Change this to your .col file name

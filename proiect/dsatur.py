@@ -1,68 +1,70 @@
-import read_graph_instance
+import graph_helper
+import copy
 
-def find_max_degree_vertex(graph):
-    max_degree_vertex = max(graph, key=lambda node: len(node.neighbors))
+def find_max_degree_vertex(adjacency_matrix, color_matrix, remaining_nodes):
+    max_degree_vertex = -1
+    max_degree = -1
+    for node in remaining_nodes:
+        degree = sum(adjacency_matrix[node])
+        if degree > max_degree:
+            max_degree = degree
+            max_degree_vertex = node
     return max_degree_vertex
 
-
-def find_max_adjacent_colors(vertex, color_set):
+def find_max_adjacent_colors(vertex, color_matrix, color_set):
     adjacent_colors = set()
-    for neighbor in vertex.neighbors:
-        if neighbor.color in color_set:
-            adjacent_colors.add(neighbor.color)
+    for neighbor, is_adjacent in enumerate(vertex):
+        if is_adjacent and color_matrix[neighbor] in color_set:
+            adjacent_colors.add(color_matrix[neighbor])
     return len(adjacent_colors)
 
-
-def dsatur(graph):
+def dsatur(adjacency_matrix, color_matrix):
     color_number = 0
     color_set = set()
-    uncolored_nodes = set(graph.values())
+    num_nodes = len(adjacency_matrix)
+    remaining_nodes = set(range(num_nodes))
 
-    while uncolored_nodes:
+    while remaining_nodes:
         # Step 2: Select uncolored vertex with maximum degree
-        max_degree_vertex = find_max_degree_vertex(uncolored_nodes)
-        max_adjacent_colors = find_max_adjacent_colors(max_degree_vertex, color_set)
+        max_degree_vertex = find_max_degree_vertex(adjacency_matrix, color_matrix, remaining_nodes)
+        max_adjacent_colors = find_max_adjacent_colors(adjacency_matrix[max_degree_vertex], color_matrix, color_set)
 
         # Step 3: Select vertex with maximum number of adjacent colors
-        for node in uncolored_nodes:
-            adjacent_colors = find_max_adjacent_colors(node, color_set)
-            if adjacent_colors > max_adjacent_colors or \
-                    (adjacent_colors == max_adjacent_colors and len(node.neighbors) > len(max_degree_vertex.neighbors)):
+        for node in remaining_nodes:
+            adjacent_colors = find_max_adjacent_colors(adjacency_matrix[node], color_matrix, color_set)
+            if (adjacent_colors > max_adjacent_colors) or \
+                    ((adjacent_colors == max_adjacent_colors) and (sum(adjacency_matrix[node]) > sum(adjacency_matrix[max_degree_vertex]))):
                 max_degree_vertex = node
                 max_adjacent_colors = adjacent_colors
 
         # Step 4: Assign color to the selected vertex
-        available_colors = set(range(1, color_number + 1)) - {neighbor.color for neighbor in max_degree_vertex.neighbors}
+        available_colors = set(range(1, color_number + 1)) - {color_matrix[neighbor] for neighbor, is_adjacent in enumerate(adjacency_matrix[max_degree_vertex]) if is_adjacent}
         if available_colors:
-            max_degree_vertex.color = min(available_colors)
+            color_matrix[max_degree_vertex] = min(available_colors)
         else:
             color_number += 1
-            max_degree_vertex.color = color_number
+            color_matrix[max_degree_vertex] = color_number
             color_set.add(color_number)
 
         # Remove colored vertex from uncolored nodes
-        uncolored_nodes.remove(max_degree_vertex)
+        remaining_nodes.remove(max_degree_vertex)
 
     return color_number
 
-
 def main():
-    filename = 'instances/queen5_5.col'  # Change this to your .col file name
-    graph = read_graph_instance.read_col_graph(filename)
+    filename = 'improvements/inputs/inithx.i.2.col'  # Change this to your .col file name
+    nodes, edges, colors, adjacency_matrix, color_matrix = graph_helper.read_graph(filename)
 
-    if not graph:
+    if not adjacency_matrix:
         print("Error reading graph.")
         return
 
-    color_number = dsatur(graph)
+    color_number = dsatur(adjacency_matrix, color_matrix)
 
     print(f"Number of colors used: {color_number}")
 
-    read_graph_instance.visualize_graph_with_colors(graph)
-
-    # Example usage:
-    for node in graph.values():
-        print(f"Node {node.id} has color {node.color}")
+    # for node, color in enumerate(color_matrix):
+    #     print(f"Node {node + 1} has color {color}")
 
 if __name__ == "__main__":
     main()

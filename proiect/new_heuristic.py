@@ -2,6 +2,7 @@ import random
 import read_graph_instance
 import copy
 import numpy as np
+import time
 
 def calculate_conflicts(graph):
     conflicts = 0
@@ -60,6 +61,11 @@ def construct_ant_solution(graph, pheromone_matrix, k):
 def local_search(graph, solution,k):
     improved = True
     max_iterations = 5
+
+    start_time = time.time()
+    timeout_duration = 300
+    is_timeout = False 
+
     while improved and max_iterations > 0:
         improved = False
         conflicts = calculate_conflicts(solution)
@@ -78,6 +84,13 @@ def local_search(graph, solution,k):
         # if improved:
         #     print("Local search: Conflicts reduced to", conflicts)
         max_iterations -= 1
+
+        if time.time() - start_time > timeout_duration:
+            is_timeout = True
+            break
+
+    if is_timeout:
+        return "timeout"
     return solution
 
 def ant_col_with_local_search(graph, k, num_ants, evaporation_rate, iterations):

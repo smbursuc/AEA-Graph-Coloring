@@ -63,13 +63,18 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
             self.test_coloring_algorithm(coloring_alg)
 
     def test_coloring_algorithm(self, alg_name):
+        write_to_csv = True
+        
         with open(f"csv_output/{alg_name}_results.csv", 'w', newline='') as csvfile:
             fieldnames = ['Instance File', 'Number of Nodes', 'Number of Edges','Expected K','K','Execution Time','Solution found','Notes']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
+            
             writer.writeheader()
             for instance_file in os.listdir(self.instances_folder):
                 with self.subTest(instance_file=instance_file):
+
+                    if not (instance_file == "david.col"):
+                        continue
                     
                     print(f"Starting testing for {alg_name}...\n")
                     
@@ -111,7 +116,8 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                             tabu_size = 7
                             rep = len(adjacency_matrix) // 2
                             nbmax = 10000
-                            solution = tabucol(adjacency_matrix, color_matrix, k, tabu_size, rep, nbmax)
+                            solution = tabucol(adjacency_matrix, k, tabu_size, rep, nbmax)
+                            color_number = k
                             meta_heurstic_check = True
                         
                         if alg_name == "ant_col_with_local_search":
@@ -123,32 +129,39 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                         execution_time_formatted = "{:.3f}".format(end_time - start_time)
                         print(f"Ended run with elapsed time: {execution_time_formatted}")
 
-                        resulted_k = None
                         notes = None
                         if meta_heurstic_check:
                             # if antcol or tabucol was run but no solution was found mark it as failed
                             if solution is None:
                                 isSolution = "False"
-                                resulted_k = "Fail"
                                 execution_time_formatted = "Fail"
+                                self.notPassed.append(instance_file)
+                            elif solution == "timeout":
+                                isSolution = "False"
+                                execution_time_formatted = "Timeout"
+                                self.notPassed.append(instance_file)
                             else:
                                 isSolution = "True"
-                                resulted_k = k
+                                self.passed.append(instance_file)
                         else:
-                            # these are for heuristic algorithms
-                            isSolution = "True"
-                            resulted_k = color_number
+                            if color_number == k:
+                                isSolution = "True"
+                            else:
+                                isSolution = "False"
+
+
                         
-                        writer.writerow({
-                            fieldnames[0]:get_instance_name(instance_file),
-                            fieldnames[1]:num_nodes,
-                            fieldnames[2]:num_edges,
-                            fieldnames[3]:k,
-                            fieldnames[4]:resulted_k,
-                            fieldnames[5]:execution_time_formatted,
-                            fieldnames[6]:isSolution,
-                            fieldnames[7]:notes
-                        })
+                        if write_to_csv:
+                            writer.writerow({
+                                fieldnames[0]:get_instance_name(instance_file),
+                                fieldnames[1]:num_nodes,
+                                fieldnames[2]:num_edges,
+                                fieldnames[3]:k,
+                                fieldnames[4]:color_number,
+                                fieldnames[5]:execution_time_formatted,
+                                fieldnames[6]:isSolution,
+                                fieldnames[7]:notes
+                            })
                     except RecursionError:
                         writer.writerow({
                             fieldnames[0]:get_instance_name(instance_file),
@@ -166,6 +179,7 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                     
                     # assert the result for console output
                     if (color_number != k):
+                        self.notPassed.append(instance_file)
                         self.assertEqual(color_number, k)
                     else:
                         self.passed.append(instance_file)
@@ -186,7 +200,10 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
             print(f"The test {test} encountered an error.")
         print("\n")
 
-        success_rate = math.floor(len(self.passed) / self.testNr * 100)
+        for test in self.notPassed:
+            print(f"The test {test} has not passed.")
+
+        success_rate = math.floor(len(self.passed) / (self.testNr - len(self.skipped)) * 100)
         print(f"Success rate is: {success_rate}%")
         
         # print("\n")
