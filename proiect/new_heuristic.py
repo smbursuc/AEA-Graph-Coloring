@@ -63,7 +63,7 @@ def local_search(graph, solution,k):
     max_iterations = 5
 
     start_time = time.time()
-    timeout_duration = 300
+    timeout_duration = 500
     is_timeout = False 
 
     while improved and max_iterations > 0:

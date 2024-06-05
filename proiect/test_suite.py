@@ -12,6 +12,7 @@ import sys
 from read_graph_instance import get_edges_vertexes
 import argparse
 from graph_helper import read_graph
+import read_graph_instance
 sys.setrecursionlimit(1000)  # Set the recursion limit to a higher value, e.g., 5000
 
 def get_instance_name(instance_file):
@@ -55,7 +56,7 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
         print(f"Total number of tests is {self.testNr}")
 
     def run_single_algorithm(self):
-        self.test_coloring_algorithm("tabucol")
+        self.test_coloring_algorithm("ant_col_with_local_search")
 
     def run_tests(self):
         coloring_algs = ["dsatur", "recursive_largest_first", "tabucol", "ant_col_with_local_search"]
@@ -73,8 +74,8 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
             for instance_file in os.listdir(self.instances_folder):
                 with self.subTest(instance_file=instance_file):
 
-                    if not (instance_file == "david.col"):
-                        continue
+                    # if not (instance_file == "david.col"):
+                    #     continue
                     
                     print(f"Starting testing for {alg_name}...\n")
                     
@@ -121,7 +122,9 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                             meta_heurstic_check = True
                         
                         if alg_name == "ant_col_with_local_search":
-                            solution = ant_col_with_local_search(adjacency_matrix, color_matrix, k, num_ants=10, evaporation_rate=0.1, iterations=100)
+                            graph = read_graph_instance.read_col_graph("instances_k/" + instance_file)
+                            solution = ant_col_with_local_search(graph, k, num_ants=10, evaporation_rate=0.1, iterations=100)
+                            color_number = k
                             meta_heurstic_check = True
 
                         end_time = time.time()
