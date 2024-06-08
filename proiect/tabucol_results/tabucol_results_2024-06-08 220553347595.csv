@@ -1,0 +1,3 @@
+Instance File,Number of Nodes,Number of Edges,Expected K,K,Execution Time,Solution found,Notes,Iterations
+anna,138,986,11,11.0,0.4473000000000001,True,,10
+david,87,812,11,11.0,0.19319999999999998,True,,10

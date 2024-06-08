@@ -23,9 +23,10 @@ fpsol2.i.1.col (496,11654), 65, REG
 fpsol2.i.2.col (451,8691), 30, REG
 fpsol2.i.3.col (425,8688), 30, REG
 inithx.i.1.col (864,18707), 54, REG
-inithx.i.2.col (645, 13979), 31, REG
+inithx.i.2.col (645,13979), 31, REG
 inithx.i.3.col (621,13969), 31, REG
-latin_square_10.col (900,307350), ?, le450_15a.col (450,8168), 15, LEI
+latin_square_10.col (900,307350), ? 
+le450_15a.col (450,8168), 15, LEI
 le450_15b.col (450,8169), 15, LEI
 le450_15c.col (450,16680), 15, LEI
 le450_15d.col (450,16750), 15, LEI
@@ -45,8 +46,8 @@ mulsol.i.5.col (186,3973), 31, REG
 school1.col (385,19095), ?, SCH
 school1_nsh.col (352,14612), ?, SCH
 zeroin.i.1.col (211,4100), 49, REG
-zeroin.i.2.col (211, 3541), 30, REG
-zeroin.i.3.col (206, 3540), 30, REG
+zeroin.i.2.col (211,3541), 30, REG
+zeroin.i.3.col (206,3540), 30, REG
 anna.col (138,493), 11, SGB
 david.col (87,406), 11, SGB
 homer.col (561,1629), 13, SGB
@@ -69,8 +70,8 @@ queen5_5.col (25,160), 5, SGB
 queen6_6.col (36,290), 7, SGB
 queen7_7.col (49,476), 7, SGB
 queen8_12.col (96,1368), 12, SGB
-queen8_8.col (64, 728), 9, SGB
-queen9_9.col (81, 2112), 10, SGB
+queen8_8.col (64,728), 9, SGB
+queen9_9.col (81,2112), 10, SGB
 myciel3.col (11,20), 4, MYC
 myciel4.col (23,71), 5, MYC
 myciel5.col (47,236), 6, MYC

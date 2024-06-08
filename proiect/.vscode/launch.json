@@ -2,16 +2,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Debug unittest",
+            "name": "Python: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/test_suite.py",
-            "args": [
-                "unittest",
-                "test_suite.TestGraphColoringAlgorithms.test_recursive_largest_first"
-            ],
+            "program": "${file}",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
         }
     ]
 }
