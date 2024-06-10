@@ -1,0 +1,13 @@
+Instance File,Number of Nodes,Number of Edges,Expected K,K,Execution Time,Solution found,Notes,Iterations
+anna,138,986,11,5.5,Timeout,0.5,,10
+david,87,812,11,9.9,Timeout,0.9,,10
+fpsol2.i.1,496,11654,65,Fail,Fail,False,Recursion error,
+fpsol2.i.1,496,11654,65,Fail,Fail,False,Recursion error,
+fpsol2.i.1,496,11654,65,Fail,Fail,False,Recursion error,
+fpsol2.i.1,496,11654,65,Fail,Fail,False,Recursion error,
+fpsol2.i.1,496,11654,65,Fail,Fail,False,Recursion error,
+fpsol2.i.1,496,11654,65,Fail,Fail,False,Recursion error,
+fpsol2.i.1,496,11654,65,Fail,Fail,False,Recursion error,
+fpsol2.i.1,496,11654,65,Fail,Fail,False,Recursion error,
+fpsol2.i.1,496,11654,65,Fail,Fail,False,Recursion error,
+fpsol2.i.1,496,11654,65,Fail,Fail,False,Recursion error,

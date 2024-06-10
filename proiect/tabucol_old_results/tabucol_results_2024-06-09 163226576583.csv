@@ -1,0 +1,46 @@
+Instance File,Number of Nodes,Number of Edges,Expected K,K,Execution Time,Solution found,Notes,Iterations
+anna,138,986,11,5.5,Timeout,0.5,,10
+david,87,812,11,9.9,Timeout,0.9,,10
+fpsol2.i.1,496,11654,65,0.0,0.0034000000000000002,False,Recursion Error,10
+fpsol2.i.2,451,8691,30,0.0,0.0021000000000000003,False,Recursion Error,10
+fpsol2.i.3,425,8688,30,0.0,0.002,False,Recursion Error,10
+games120,120,1276,9,0.0,0.0499,False,Recursion Error,10
+homer,561,3258,13,0.0,0.0029,False,Recursion Error,10
+huck,74,602,11,11.0,1.0473000000000001,True,,10
+inithx.i.1,864,18707,54,0.0,0.0027,False,Recursion Error,10
+inithx.i.2,645,13979,31,0.0,0.0021000000000000003,False,Recursion Error,10
+inithx.i.3,621,13969,31,0.0,0.0043,False,Recursion Error,10
+jean,80,508,10,10.0,2.8753,True,,10
+le450.15b,450,8169,15,0.0,0.0014000000000000002,False,Recursion Error,10
+le450.15c,450,16680,15,0.0,0.004700000000000001,False,Recursion Error,10
+le450.15d,450,16750,15,0.0,0.0045,False,Recursion Error,10
+le450.25a,450,8263,25,0.0,0.0016000000000000003,False,Recursion Error,10
+le450.25b,450,8263,25,0.0,0.0038000000000000004,False,Recursion Error,10
+le450.25c,450,17343,25,0.0,0.0024000000000000002,False,Recursion Error,10
+le450.25d,450,17425,25,0.0,0.004900000000000001,False,Recursion Error,10
+le450.5a,450,5714,5,0.0,0.0014000000000000002,False,Recursion Error,10
+le450.5b,450,9803,5,0.0,0.0018000000000000002,False,Recursion Error,10
+le450.5c,450,9803,5,0.0,0.0017000000000000001,False,Recursion Error,10
+le450.5d,450,9757,5,0.0,0.0019000000000000002,False,Recursion Error,10
+miles1000,128,6432,42,0.0,0.0012000000000000003,False,Recursion Error,10
+miles1500,128,10396,73,0.0,0.0013000000000000002,False,Recursion Error,10
+miles250,128,774,8,8.0,15.182400000000001,True,,10
+miles500,128,2340,20,0.0,0.0225,False,Recursion Error,10
+miles750,128,4226,31,0.0,0.0015000000000000002,False,Recursion Error,10
+myciel3,11,20,4,4.0,0.007299999999999998,True,,10
+myciel4,23,71,5,5.0,0.051000000000000004,True,,10
+myciel5,47,236,6,6.0,0.457,True,,10
+myciel6,95,755,7,7.0,3.5814,True,,10
+myciel7,191,2360,8,0.0,0.0030000000000000005,False,Recursion Error,10
+queen11.11,121,3960,11,0.0,0.0011000000000000003,False,Recursion Error,10
+queen13.13,169,6656,13,0.0,0.0011000000000000003,False,Recursion Error,10
+queen5.5,25,320,5,5.0,1.1665,True,,10
+queen6.6,36,580,7,0.0,Timeout,False,,10
+queen7.7,49,952,7,0.7,Timeout,0.1,,10
+queen11.11,121,3960,11,0.0,0.0011000000000000003,False,Recursion Error,10
+queen13.13,169,6656,13,0.0,0.0011000000000000003,False,Recursion Error,10
+queen8.12,96,2736,12,0.0,Timeout,False,,10
+queen9.9,81,2112,10,0.0,Timeout,False,,10
+zeroin.i.1,211,4100,49,0.0,0.005800000000000001,False,Recursion Error,10
+zeroin.i.2,211,3541,30,0.0,0.023400000000000004,False,Recursion Error,10
+zeroin.i.3,206,3540,30,0.0,0.0392,False,Recursion Error,10

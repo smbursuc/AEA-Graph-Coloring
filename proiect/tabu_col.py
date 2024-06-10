@@ -2,6 +2,8 @@ import random
 import read_graph_instance
 import copy
 import sys
+import time
+import matplotlib.pyplot as plt
 sys.setrecursionlimit(50000)  # Set the recursion limit to a higher value, e.g., 5000
 
 
@@ -20,7 +22,7 @@ def f(solution):
         for neighbor in node.neighbors:
             if neighbor.color == node.color or node.color == 'unset':
                 conflicts += 1
-    return conflicts // 2  # Divide by 2 because each conflict is counted twice
+    return conflicts  # Divide by 2 because each conflict is counted twice
 
 
 def generate_neighbors(solution, tabu_list, rep, k):
@@ -51,18 +53,23 @@ def tabucol(graph, k, tabu_size, rep, nbmax, debug=False):
     nbiter = 0
     tabu_list = []
     min_asp = None
+    conflict_list = {}
 
+    start_time = time.time()
     while f(current_solution) > 0 and nbiter < nbmax:
         neighbors = generate_neighbors(current_solution, tabu_list, rep, k)
 
+        curr_conflicts = f(current_solution)
+        conflict_list[nbiter] = curr_conflicts 
+
         if neighbors:
             best_neighbor = min(neighbors, key=lambda x: f(x))
-            if f(best_neighbor) <= f(current_solution):
+            if f(best_neighbor) <= curr_conflicts:
                 if min_asp is None:
                     min_asp = f(best_neighbor)
                 else:
                     min_asp = min(min_asp, f(best_neighbor))
-                current_solution = copy.deepcopy(best_neighbor)
+                
 
                 if debug:
                     print(f"New minimum aspiration: {min_asp}")
@@ -71,12 +78,34 @@ def tabucol(graph, k, tabu_size, rep, nbmax, debug=False):
             if len(tabu_list) > tabu_size:
                 current_solution = copy.deepcopy(tabu_list.pop(0))
                 tabu_list.clear()
+        current_solution = copy.deepcopy(best_neighbor)
 
         nbiter += 1
+
+        if time.time() - start_time > 300:
+            is_timeout = True
+            print("Timeout reached.")
+            break
 
     if debug:
         print(f"Minimum conflicts found: {min_asp}")
         print(f"Number of iterations: {nbiter}")
+
+        # Extract keys and values
+    keys = list(conflict_list.keys())
+    values = list(conflict_list.values())
+
+    # Plotting
+    plt.figure(figsize=(10, 6))
+    plt.scatter(values, keys)
+
+    # Adding labels and title
+    plt.xlabel('Iterations')
+    plt.ylabel('Conflicts')
+    plt.title('queen8_12.col')
+
+    # Display the graph
+    plt.show()
 
     return current_solution if f(current_solution) == 0 else None
     # return current_solution

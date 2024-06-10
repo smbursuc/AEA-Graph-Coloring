@@ -1,0 +1,8 @@
+Instance File,Number of Nodes,Number of Edges,Expected K,K,Execution Time,Solution found,Notes,Iterations
+queen11_11,121,3960,11,0.0,0.0011000000000000003,False,Recursion Error,10
+queen13_13,169,6656,13,0.0,0.0011000000000000003,False,Recursion Error,10
+queen8_12,96,2736,12,0.0,Timeout,False,,10
+queen9_9,81,2112,10,0.0,Timeout,False,,10
+zeroin.i.1,211,4100,49,0.0,0.005800000000000001,False,Recursion Error,10
+zeroin.i.2,211,3541,30,0.0,0.023400000000000004,False,Recursion Error,10
+zeroin.i.3,206,3540,30,0.0,0.0392,False,Recursion Error,10

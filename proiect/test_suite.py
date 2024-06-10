@@ -15,6 +15,7 @@ import argparse
 from graph_helper import read_graph
 import read_graph_instance
 from numbers import Number
+import tabu_col
 sys.setrecursionlimit(1000)  # Set the recursion limit to a higher value, e.g., 5000
 
 def get_instance_name(instance_file):
@@ -71,8 +72,10 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
         timestamp = now.replace('.','').replace(':','')
         
         fieldnames = ['Instance File', 'Number of Nodes', 'Number of Edges','Expected K','K','Execution Time','Solution found','Notes',"Iterations"]
+        # ignore_list = ['huck.col', 'homer.col', 'le450_25b.col', 'queen13_13.col']
+        ignore_list = ['queen8_12.col']
         
-        with open(f"{alg_name}_results/{alg_name}_results_{timestamp}.csv", 'w', newline='') as csvfile:
+        with open(f"{alg_name}_old_results/{alg_name}_results_{timestamp}.csv", 'w', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for instance_file in os.listdir(self.instances_folder):
@@ -82,7 +85,12 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                 for field in avg_fields:
                     test_cols.setdefault(field, [])
 
-                test_nr = 10
+                if instance_file not in ignore_list:
+                    print(f"Already tested {instance_file}...")
+                    self.passed.append(instance_file)
+                    continue
+
+                test_nr = 1
                 for i in range(test_nr):
                     with self.subTest(instance_file=instance_file):
 
@@ -96,8 +104,6 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                             self.skipped.append(instance_file)
                             continue
 
-
-
                         instance_path = os.path.join(self.instances_folder, instance_file)
 
                         print(f"Currently running {instance_file}...")
@@ -105,15 +111,18 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                         num_nodes, num_edges = get_edges_vertexes(instance_path)
                         name = get_instance_name(instance_file)
                         nodes, edges, colors, adjacency_matrix, color_matrix = read_graph(instance_path)
+                        graph = read_graph_instance.read_col_graph(instance_path)
 
 
                         k = self.solutions[get_instance_name(instance_file)]
+
+                        start_time = time.time()
 
                         if k == -1:
                             continue
                         try:
                             
-                            start_time = time.time()
+                            
 
                             color_number = 0
                             solution = None
@@ -129,7 +138,8 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                                 tabu_size = 7
                                 rep = len(adjacency_matrix) // 2
                                 nbmax = 10000
-                                solution = tabucol(adjacency_matrix, k, tabu_size, rep, nbmax)
+                                # solution = tabucol(adjacency_matrix, k, tabu_size, rep, nbmax)
+                                solution = tabu_col.tabucol(graph, k, tabu_size, rep, nbmax)
                                 if solution != None:
                                     color_number = k
                                 meta_heurstic_check = True
@@ -151,7 +161,7 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                                 # if antcol or tabucol was run but no solution was found mark it as failed
                                 if solution is None:
                                     isSolution = "False"
-                                    execution_time_formatted = "Fail"
+                                    execution_time_formatted = "-1"
                                     self.notPassed.append(instance_file)
                                 elif solution == "timeout":
                                     isSolution = "False"
@@ -181,19 +191,22 @@ class TestGraphColoringAlgorithms(unittest.TestCase):
                             #     break
 
                         except RecursionError:
-                            writer.writerow({
-                                fieldnames[0]:get_instance_name(instance_file),
-                                fieldnames[1]:num_nodes,
-                                fieldnames[2]:num_edges,
-                                fieldnames[3]:k,
-                                fieldnames[4]:'Fail',
-                                fieldnames[5]:'Fail',
-                                fieldnames[6]:'False',
-                                fieldnames[7]:'Recursion error'
-                            })
+                            end_time = time.time()
+                            execution_time_formatted = "{:.3f}".format(end_time - start_time)
+                            print(f"Ended run with elapsed time: {execution_time_formatted}")
+
+                            test_cols.setdefault(fieldnames[0], get_instance_name(instance_file))
+                            test_cols.setdefault(fieldnames[1], num_nodes)
+                            test_cols.setdefault(fieldnames[2], num_edges)
+                            test_cols.setdefault(fieldnames[3], k)
+                            test_cols[fieldnames[4]].append(color_number)
+                            test_cols[fieldnames[5]].append(float(execution_time_formatted))
+                            test_cols[fieldnames[6]].append("False")
+                            test_cols[fieldnames[7]].append("Recursion Error")
+                            test_cols.setdefault(fieldnames[8], test_nr)
+                            
                             print(f"Recursion error in {name}")
                             self.withErrors.append(instance_file)
-                            continue
                         
                         # assert the result for console output
                         # if (color_number != k):

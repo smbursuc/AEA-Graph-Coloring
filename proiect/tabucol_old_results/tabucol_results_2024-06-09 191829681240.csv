@@ -1,0 +1,5 @@
+Instance File,Number of Nodes,Number of Edges,Expected K,K,Execution Time,Solution found,Notes,Iterations
+homer,561,3258,13,0.0,0.0017000000000000001,False,Recursion Error,10
+huck,74,602,11,11.0,1.0575999999999999,True,,10
+le450_25b,450,8263,25,0.0,0.0017000000000000001,False,Recursion Error,10
+queen13_13,169,6656,13,0.0,0.0011000000000000003,False,Recursion Error,10
